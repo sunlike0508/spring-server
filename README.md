@@ -55,7 +55,7 @@ sudo lsof -i :8080 #프로세스 ID(PID) 조회
 sudo kill -9 PID  #프로세스 종료
 ```
 
-
+## WAR 빌드와 배포
 
 
 
