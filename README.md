@@ -5,9 +5,7 @@
 
 ### **외장 서버 VS 내장 서버**
 
-
-
-
+<img width="696" alt="Screenshot 2024-11-12 at 22 26 04" src="https://github.com/user-attachments/assets/bb2f97e5-3806-4a92-be22-48d4f890bafa">
 
 **전통적인 방식**
 
