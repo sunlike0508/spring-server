@@ -69,6 +69,7 @@ WAS에 우리가 만든 코드를 빌드하고 배포해보자.
 
 WAR 파일 생성 확인 `build/libs/server-0.0.1-SNAPSHOT.war`
 
+<img width="393" alt="Screenshot 2024-11-16 at 11 42 37" src="https://github.com/user-attachments/assets/147f1153-b242-4f92-972c-17b1df00864c">
 
 **참고**
 
@@ -94,6 +95,8 @@ plugins {
 ```
 
 **WAR를 푼 결과** 
+
+<img width="417" alt="Screenshot 2024-11-16 at 11 47 43" src="https://github.com/user-attachments/assets/13ec3ab3-480f-4ec9-87e5-ddf6cd18af14">
 
 * `WEB-INF`
   * `classes` 
