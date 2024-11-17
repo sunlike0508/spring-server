@@ -407,7 +407,7 @@ AppInitV1Servlet.onStartup
 4. `appInit.onStartup(ctx)`
    * 애플리케이션 초기화 코드를 직접 실행하면서 서블릿 컨테이너 정보가 담긴 `ctx` 도 함께 전달한다.
 
-
+<img width="709" alt="Screenshot 2024-11-17 at 23 26 15" src="https://github.com/user-attachments/assets/f5f42c33-a006-4bdd-b3d3-95580c6c636e">
 
 초기화는 다음 순서로 진행된다.
 
