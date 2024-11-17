@@ -184,9 +184,10 @@ WAS가 제공하는 초기화 기능을 사용하면, WAS 실행 시점에 이�
 
 ### **서블릿 컨테이너와 스프링 컨테이너**
 
+<img width="698" alt="Screenshot 2024-11-17 at 22 49 27" src="https://github.com/user-attachments/assets/a691b8d8-17dc-4e1d-aed2-aafab4b2994f">
+
 지금부터 서블릿 컨테이너의 초기화 기능을 알아보고 이어서 이 초기화 기능을 활용해 스프링 만들고 연결해보자.
 
- 
 ### 서블릿 컨테이너 초기화 개발
 
 서블릿은 `ServletContainerInitializer` 라는 초기화 인터페이스를 제공한다. 이름 그대로 서블릿 컨테이너를 초기화 하는 기능을 제공한다.
@@ -194,7 +195,6 @@ WAS가 제공하는 초기화 기능을 사용하면, WAS 실행 시점에 이�
 서블릿 컨테이너는 실행 시점에 초기화 메서드인 `onStartup()` 을 호출해준다. 
 
 여기서 애플리케이션에 필요한 기능 들을 초기화 하거나 등록할 수 있다.
-
 
 **ServletContainerInitializer** 
 
@@ -244,6 +244,8 @@ hello.container.MyContainerInitV1
 `services` 는 마지막에 `s` 가 들어간다.
 
 파일 이름은 `jakarta.servlet.ServletContainerInitializer` 이다.
+
+<img width="523" alt="Screenshot 2024-11-17 at 23 02 23" src="https://github.com/user-attachments/assets/b4bf1969-040d-4832-ace7-1351f6d655b3">
 
 WAS를 실행해보자. 
 
