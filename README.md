@@ -260,4 +260,187 @@ MyContainerInitV1 ctx= org.apache.catalina.core.ApplicationContextFacade@1baffe3
 WAS를 실행할 때 해당 초기화 클래스가 실행된 것을 확인할 수 있다.
 
 
+## 서블릿 컨테이너 초기화2
+
+서블릿 컨테이너 초기화를 조금 더 자세히 알아보자.
+
+여기서는 `HelloServlet` 이라는 서블릿을 서블릿 컨테이너 초기화 시점에 프로그래밍 방식으로 직접 등록해줄 것이다.
+
+**서블릿을 등록하는 2가지 방법** 
+
+* `@WebServlet` 애노테이션
+* 프로그래밍 방식
+
+```java
+public class HelloServlet extends HttpServlet {
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        System.out.println("HelloServlet.service");
+
+        resp.getWriter().println("hello servlet");
+    }
+}
+```
+
+
+**애플리케이션 초기화**
+
+서블릿 컨테이너는 조금 더 유연한 초기화 기능을 지원한다. 
+
+여기서는 이것을 **애플리케이션 초기화**라 하겠다.
+
+이 부분을 이해하려면 실제 동작하는 코드를 봐야 한다.
+
+```java
+public interface AppInit {
+    void onStartup(ServletContext servletContext);
+}
+```
+
+애플리케이션 초기화를 진행하려면 먼저 인터페이스를 만들어야 한다. 
+
+내용과 형식은 상관없고, 인터페이스는 꼭 필요하다. 
+
+예제 진행을 위해서 여기서는 `AppInit` 인터페이스를 만들자.
+
+앞서 개발한 애플리케이션 초기화( `AppInit` ) 인터페이스를 구현해서 실제 동작하는 코드를 만들어보자.
+
+```java
+public class AppInitV1Servlet implements AppInit{
+
+    @Override
+    public void onStartup(ServletContext servletContext) {
+        System.out.println("AppInitV1Servlet.onStartup");
+        
+        // 순수 서블릿 코드 등록
+        ServletRegistration.Dynamic helloServlet = servletContext.addServlet("helloServlet", new HelloServlet());
+        helloServlet.addMapping("/hello-servlet");
+    }
+}
+```
+
+**참고 - 프로그래밍 방식을 사용하는 이유**
+
+`@WebServlet` 을 사용하면 애노테이션 하나로 서블릿을 편리하게 등록할 수 있다. 
+
+하지만 애노테이션 방식을 사용하면 유연하게 변경하는 것이 어렵다. 
+
+마치 하드코딩 된 것처럼 동작한다. 
+
+아래 참고 예시를 보면 `/test` 경로를 변경하 고 싶으면 코드를 직접 변경해야 바꿀 수 있다.
+
+반면에 프로그래밍 방식은 코딩을 더 많이 해야하고 불편하지만 무한한 유연성을 제공한다.
+
+예를 들어서 
+
+* `/hello-servlet` 경로를 상황에 따라서 바꾸어 외부 설정을 읽어서 등록할 수 있다. 
+* 서블릿 자체도 특정 조건에 따라서 `if` 문으로 분기해서 등록하거나 뺄 수 있다. 
+* 서블릿을 내가 직접 생성하기 때문에 생성자에 필요한 정보를 넘길 수 있다.
+
+예제에서는 단순화를 위해 이런 부분들을 사용하지는 않았지만 프로그래밍 방식이 왜 필요하지? 라고 궁금하신 분들을 위해서 적어보았다.
+
+
+참고 - 예시 
+
+```java
+@WebServlet(urlPatterns = "/test")
+public class TestServlet extends HttpServlet {}
+```
+
+서블릿 컨테이너 초기화( `ServletContainerInitializer` )는 앞서 알아보았다. 
+
+그런데 애플리케이션 초기화 ( `AppInit` )는 어떻게 실행되는 것일까? 다음 코드를 만들어 보자.
+
+```java
+@HandlesTypes(AppInit.class)
+public class MyContainerInitV2 implements ServletContainerInitializer {
+
+    @Override
+    public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
+        System.out.println("MyContainerInitV2.onStartup");
+        System.out.println("MyContainerInitV1 c= " + c);
+        System.out.println("MyContainerInitV1 ctx= " + ctx);
+
+        for(Class<?> appInitClass : c) {
+            try {
+                AppInit appInit = (AppInit) appInitClass.getDeclaredConstructor().newInstance();
+                appInit.onStartup(ctx);
+            } catch(Exception e) {
+                throw new ServletException(e);
+            }
+        }
+    }
+}
+
+```
+
+jakarta.servlet.ServletContainerInitializer 에 등록
+
+```java
+hello.container.MyContainerInitV1
+hello.container.MyContainerInitV2
+```
+
+**결과**
+
+```shell
+MyContainerInitV1.onStartup
+MyContainerInitV1 c= null
+MyContainerInitV1 ctx= org.apache.catalina.core.ApplicationContextFacade@6804e104
+MyContainerInitV2.onStartup
+MyContainerInitV2 c= [class hello.container.AppInitV1Servlet]
+MyContainerInitV2 ctx= org.apache.catalina.core.ApplicationContextFacade@6804e104
+AppInitV1Servlet.onStartup
+```
+
+
+**애플리케이션 초기화 과정**
+
+1. `@HandlesTypes` 애노테이션에 애플리케이션 초기화 인터페이스를 지정한다.
+   * 여기서는 앞서 만든 `AppInit.class` 인터페이스를 지정했다.
+2. 서블릿 컨테이너 초기화( `ServletContainerInitializer` )는 파라미터로 넘어오는 `Set<Class<?>> c` 에 애플리케이션 초기화 인터페이스의 구현체들을 모두 찾아서 클래스 정보로 전달 한다.
+   * 여기서는 `@HandlesTypes(AppInit.class)` 를 지정했으므로 `AppInit.class` 의 구현체인 `AppInitV1Servlet.class` 정보가 전달된다.
+   * 참고로 객체 인스턴스가 아니라 클래스 정보를 전달하기 때문에 실행하려면 객체를 생성해서 사용해 야 한다.
+3. `appInitClass.getDeclaredConstructor().newInstance()`
+   * 리플렉션을 사용해서 객체를 생성한다. 참고로 이 코드는 `new AppInitV1Servlet()` 과 같다 생각하면 된다.
+4. `appInit.onStartup(ctx)`
+   * 애플리케이션 초기화 코드를 직접 실행하면서 서블릿 컨테이너 정보가 담긴 `ctx` 도 함께 전달한다.
+
+
+
+초기화는 다음 순서로 진행된다.
+
+1. 서블릿 컨테이너 초기화 실행
+   * `resources/META-INF/services/ jakarta.servlet.ServletContainerInitializer`
+2. 애플리케이션 초기화 실행 
+   * `@HandlesTypes(AppInit.class)`
+
+**참고**
+
+서블릿 컨테이너 초기화만 있어도 될 것 같은데, 왜 이렇게 복잡하게 애플리케이션 초기화라는 개념을 만들었을까? 
+
+**편리함**
+
+서블릿 컨테이너를 초기화 하려면 `ServletContainerInitializer` 인터페이스를 구현한 코드를 만들어야 한다. 
+
+여기에 추가로 `META-INF/services/ jakarta.servlet.ServletContainerInitializer` 파일에 해당 코드를 직접 지정해주어야 한다.
+
+애플리케이션 초기화는 특정 인터페이스만 구현하면 된다. 
+
+**의존성**
+
+애플리케이션 초기화는 서블릿 컨테이너에 상관없이 원하는 모양으로 인터페이스를 만들 수 있다. 
+
+이를 통해 애플리케이션 초기화 코드가 서블릿 컨테이너에 대한 의존을 줄일 수 있다. 
+
+특히 `ServletContext ctx` 가 필요없는 애플리케이션 초기화 코드라면 의존을 완전히 제거할 수도 있다.
+
+
+
+
+
+
+
+
 
