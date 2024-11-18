@@ -616,7 +616,7 @@ public class AppInitV3SpringMvc implements WebApplicationInitializer {
 
 따라서 다음과 같이 요청하면 해당 디스패처 서블릿을 통해 `/hello-spring` 이 매핑된 컨트롤러 메서드가 호출된다.
 
-
+<img width="707" alt="Screenshot 2024-11-18 at 23 32 44" src="https://github.com/user-attachments/assets/0d5f9bf9-64e0-4cbb-8298-6bfc5d7a4d1c">
 
 현재 등록된 서블릿 다음과 같다. 
 
@@ -667,10 +667,10 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 
 우리는 앞서 이 인터페이스를 구현했다.
 
+<img width="700" alt="Screenshot 2024-11-18 at 23 37 04" src="https://github.com/user-attachments/assets/2edb1b3e-f02f-4f56-907a-dc4558928531">
 
 
 초록색 영역은 이미 스프링이 만들어서 제공하는 영역이다.
-
 
 **정리**
 
