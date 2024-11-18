@@ -446,7 +446,9 @@ AppInitV1Servlet.onStartup
 * 스프링 컨테이너 만들기
 * 스프링MVC 컨트롤러를 스프링 컨테이너에 빈으로 등록하기
 * 스프링MVC를 사용하는데 필요한 디스패처 서블릿을 서블릿 컨테이너 등록하기
- 
+* 
+ <img width="676" alt="Screenshot 2024-11-18 at 23 08 32" src="https://github.com/user-attachments/assets/c79568a5-05e7-49d4-a810-dc87e2f4e3e8">
+
 ### **서블릿 컨테이너와 스프링 컨테이너**
 
 `spring-webmvc` 라이브러리를 추가하면 스프링 MVC 뿐만 아니라 `spring-core` 를 포함한 스프링 핵심 라이브러리들도 함께 포함된다.
@@ -547,6 +549,7 @@ public class HelloController {
 이때 서블릿을 찾아서 호출하는데 사용된 `/spring` 을 제외한 `/hello-spring` 가 매핑된 컨트롤러 `HelloController` )의 메서드를 찾아서 실행한다. (쉽게 이야기해서 뒤에 `*` 부분으로 스프링 컨트롤러를 찾는다.)
 
 
+<img width="721" alt="Screenshot 2024-11-18 at 23 25 28" src="https://github.com/user-attachments/assets/73d93e00-6247-4715-88f9-6dc5f7a119b6">
 
 
 
