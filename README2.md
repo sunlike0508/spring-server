@@ -37,6 +37,7 @@
 
 ### 외장 서버 vs 내장 서버
 
+<img width="699" alt="Screenshot 2024-11-19 at 22 54 26" src="https://github.com/user-attachments/assets/b9be8163-424b-4109-950b-c7d524eff4a4">
 
 왼쪽 그림은 웹 애플리케이션 서버에 WAR 파일을 배포하는 방식, WAS를 실행해서 동작한다.
 
